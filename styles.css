@@ -88,3 +88,41 @@ ul.pub li:first-child{border-top:0;}
   .wrap{margin:28px auto;}
   h1{font-size:28px;}
 }
+
+/* Wide banners (two scenes) */
+.banner{
+  margin: 22px 0 20px 0;
+  border-radius: var(--radius);
+  overflow:hidden;
+  border: 1px solid var(--rule);
+}
+.banner img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+.banner .caption{
+  font-size:13px;
+  color:var(--muted);
+  padding:10px 12px;
+  border-top: 1px solid var(--rule);
+  background:#fafafa;
+}
+
+/* PDF/Data chips */
+.links-inline{
+  margin-left: 10px;
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chip{
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 13px;
+}
+.chip:hover{ opacity: .75; }
+
