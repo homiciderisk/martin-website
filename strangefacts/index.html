@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Strange Facts – interaktivt, kildebaseret faktatjek af udsagn fra Mads Strange i politiske debatter.">
+  <title>Strange Facts</title>
+  <style>
+    :root{
+      --bg:#f7f3eb;--paper:#fffdf8;--ink:#171717;--muted:#6b665d;--line:#d9d2c5;
+      --accent:#7b2cff;--accent2:#ff5a36;--good:#177245;--bad:#a72d2d;--nuance:#8a5b00;
+      --shadow:0 12px 40px rgba(32,24,10,.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit}
+    button,select{font:inherit}
+    button{cursor:pointer}
+    .wrap{max-width:1050px;margin:auto;padding:22px}
+    header{padding:56px 0 30px}
+    .kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--muted)}
+    h1{font-size:clamp(3rem,10vw,7rem);line-height:.9;margin:.2em 0 .18em;letter-spacing:-.065em}
+    h1 span{color:var(--accent)}
+    .lede{max-width:760px;font-size:1.08rem;color:var(--muted)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:28px 0}
+    .pill,.guess,.reset{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px;font-weight:750}
+    .pill[aria-pressed="true"]{background:var(--ink);color:white;border-color:var(--ink)}
+    .score{margin-left:auto;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:800}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+    .card.hidden{display:none}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.76rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .tag{border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+    blockquote{margin:18px 0 10px;font-size:1.23rem;line-height:1.35;font-weight:850;letter-spacing:-.02em}
+    .context{font-size:.92rem;color:var(--muted)}
+    .ask{margin-top:18px;font-size:.76rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .choices{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+    .guess{border-radius:13px;text-align:left;min-height:46px}
+    .guess:hover{border-color:var(--ink)}
+    .guess:disabled{cursor:default;opacity:.58}
+    .guess.picked{outline:3px solid rgba(123,44,255,.22);border-color:var(--accent);opacity:1}
+    .result{display:none;margin-top:18px;border-top:1px solid var(--line);padding-top:18px}
+    .result.open{display:block}
+    .verdict{display:inline-block;border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+    .v-good{background:#e8f5ed;color:var(--good)}
+    .v-bad{background:#faeaea;color:var(--bad)}
+    .v-nuance{background:#fff3d8;color:var(--nuance)}
+    .result p{margin:.7em 0}
+    .source{display:inline-block;margin-top:6px;font-weight:850;text-decoration-thickness:1.5px;text-underline-offset:3px}
+    .method{margin:28px 0 40px;padding:22px;border:1px solid var(--line);border-radius:22px;background:#efe9de}
+    .method h2{margin:0 0 8px;font-size:1.1rem}
+    footer{padding:12px 0 42px;color:var(--muted);font-size:.86rem}
+    .notice{font-size:.85rem;background:#fff3d8;border:1px solid #e7cf96;border-radius:14px;padding:12px 14px;margin-top:16px}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.score{margin-left:0;width:100%}header{padding-top:34px}.wrap{padding:16px}}
+    @media(prefers-reduced-motion:no-preference){.card{transition:transform .18s ease,border-color .18s ease}.card:hover{transform:translateY(-2px)}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Politisk debat • marts–september 2026</div>
+    <h1>Strange <span>Facts</span></h1>
+    <p class="lede">Gå på opdagelse i konkrete, efterprøvelige udsagn fra Mads Strange. Gæt først, hvad dokumentationen viser, og åbn derefter faktatjekket med kilde og kontekst.</p>
+    <div class="notice"><strong>Metode:</strong> Siden vurderer ikke Mads Strange som politiker. Den vurderer kun den dokumenterbare del af de enkelte udsagn.</div>
+  </header>
+
+  <nav class="toolbar" aria-label="Filtrér faktatjek">
+    <button class="pill" data-filter="alle" aria-pressed="true">Alle</button>
+    <button class="pill" data-filter="velfærd" aria-pressed="false">Velfærd</button>
+    <button class="pill" data-filter="skat" aria-pressed="false">Skat</button>
+    <button class="pill" data-filter="retssikkerhed" aria-pressed="false">Retssikkerhed</button>
+    <button class="pill" data-filter="politik" aria-pressed="false">Politik</button>
+    <div class="score" aria-live="polite">Udforsket: <span id="count">0</span>/7</div>
+  </nav>
+
+  <main class="grid" id="cards">
+
+    <article class="card" data-topic="velfærd" data-answer="bad">
+      <div class="meta"><span class="tag">16. sep.</span><span>Arne-pension</span></div>
+      <blockquote>“Otte ud af ti af dem, der er på Arne-pension, siger, at de ikke er nedslidte.”</blockquote>
+      <p class="context">Udsagn i Borgerlig Tabloid, efterfølgende faktatjekket af TjekDet.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-bad">Ikke understøttet</span>
+        <p>TjekDet gennemgik den undersøgelse, der blev henvist til. Her svarede 16,5 procent, at de slet ikke følte sig fysisk nedslidte. Omkring otte ud af ti angav derimod en eller anden grad af fysisk nedslidning.</p>
+        <a class="source" href="https://www.tjekdet.dk/faktatjek/mads-strange-og-joachim-b-olsen-fremsaetter-forkert-paastand-om-arne-pension" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="velfærd" data-answer="bad">
+      <div class="meta"><span class="tag">20. maj</span><span>Handicap</span></div>
+      <blockquote>Danmark klarer sig “suverænt dårligst” blandt 31 lande til at hjælpe handicappede.</blockquote>
+      <p class="context">Strange brugte et forskningsstudie som belæg for udsagnet.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-bad">Ikke understøttet</span>
+        <p>En af forskerne bag studiet afviste den udlægning. Studiet ser på forskelle mellem personer med og uden handicap, ikke på om danske handicappede absolut set får dårligst hjælp blandt de 31 lande. Strange sagde senere, at han burde have formuleret sig mere præcist.</p>
+        <a class="source" href="https://www.tjekdet.dk/faktatjek/er-danmark-daarligst-i-europa-til-hjaelpe-handicappede-forsker-afviser-la-politikers" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="skat" data-answer="nuance">
+      <div class="meta"><span class="tag">17. jun.</span><span>Indkomstskat</span></div>
+      <blockquote>Regeringen hæver skatten for danskere, der tjener under 58.000 kr. om måneden.</blockquote>
+      <p class="context">Udsagn i debat med Socialdemokratiets Thomas Skriver Jensen.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-nuance">Kræver nuance</span>
+        <p>To økonomer vurderede over for TjekDet, at fastfrysningen af beløbsgrænser isoleret set giver højere indkomstskat, også for denne gruppe. Men udsagnet siger ikke noget om den samlede økonomiske effekt af hele regeringens pakke, blandt andet lavere fødevaremoms.</p>
+        <a class="source" href="https://www.tjekdet.dk/faktatjek/haever-regeringen-skatten-dem-der-tjener-under-58000-om-maaneden" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="skat" data-answer="good">
+      <div class="meta"><span class="tag">aug.–sep.</span><span>Fødevaremoms</span></div>
+      <blockquote>Regeringens planlagte momsreduktioner på fødevarer er opgjort til 17,4 mia. kr. årligt.</blockquote>
+      <p class="context">Beløbet blev brugt af Strange i flere spørgsmål til skatte- og vækstministeren.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-good">Understøttet</span>
+        <p>Folketingets materiale henviser til ministeriets beregning på 17,4 mia. kr. årligt efter tilbageløb og adfærd, når restauranter holdes uden for regnestykket. Forudsætningen er vigtig, men selve tallet kan genfindes i det officielle materiale.</p>
+        <a class="source" href="https://www.ft.dk/samling/20252/almdel/sau/spm/216/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="retssikkerhed" data-answer="nuance">
+      <div class="meta"><span class="tag">26. aug.</span><span>Skattesag</span></div>
+      <blockquote>En selvstændig var blevet pålagt at betale 110 procent i skat og havde 51 måneders ventetid i sin sag.</blockquote>
+      <p class="context">Strange brugte Jacob Thorngaards sag under et spørgsmål i Folketinget.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-nuance">Kræver nuance</span>
+        <p>Folketingets referat dokumenterer, at Strange fremsatte tallene 110 procent og 51 måneder. Ministeren svarede, at det beskrevne forløb lød urimeligt, men bekræftede ikke selv de konkrete tal i sit svar. Referatet dokumenterer derfor udsagnet, men er ikke i sig selv en uafhængig verifikation af tallene.</p>
+        <a class="source" href="https://www.ft.dk/forhandlinger/20252/20252M019_2026-08-26_1300.htm" target="_blank" rel="noopener">Kilde: Folketingets referat ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="retssikkerhed" data-answer="nuance">
+      <div class="meta"><span class="tag">2. sep.</span><span>Skatteforvaltningen</span></div>
+      <blockquote>Den ene medarbejder blandt mere end 10.000, der havde til formål at sikre borgernes retssikkerhed, blev fjernet.</blockquote>
+      <p class="context">Strange henviste til nedlæggelsen af posten som borger- og retssikkerhedschef.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-nuance">Kræver nuance</span>
+        <p>Stillingen som borger- og retssikkerhedschef blev nedlagt. Men ministeren svarede i samme debat, at der tidligere var én retssikkerhedschef, mens der nu var ti koordinatorer i styrelserne. Formuleringen om, at kun én medarbejder havde til formål at sikre retssikkerhed, giver derfor et ufuldstændigt billede af organiseringen.</p>
+        <a class="source" href="https://www.ft.dk/samling/20252/spoergsmaal/s260/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a>
+      </div>
+    </article>
+
+    <article class="card" data-topic="politik" data-answer="good">
+      <div class="meta"><span class="tag">2. sep.</span><span>Skatteministre</span></div>
+      <blockquote>Danmark har på fem forskellige år haft fem forskellige skatteministre, hvoraf fire var socialdemokrater, efterfulgt af en minister fra Moderaterne.</blockquote>
+      <p class="context">Strange brugte ministerudskiftningerne som argument i en debat om skatteområdet.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-good">Understøttet i substansen</span>
+        <p>Folketingets ministeroversigt viser Morten Bødskov (S), Jeppe Bruus (S), Rasmus Stoklund (S), Ane Halsboe-Jørgensen (S) og derefter Jakob Engel-Schmidt (M) som skatte-/skatte- og vækstministre i den relevante årrække. Formuleringen “på fem forskellige år” er retorisk kompakt, men ministerrækken og partifordelingen kan genfindes i den officielle historik.</p>
+        <a class="source" href="https://www.ft.dk/da/folkestyret/regeringen/regeringer-siden-1953" target="_blank" rel="noopener">Kilde: Folketingets ministeroversigt ↗</a>
+      </div>
+    </article>
+
+  </main>
+
+  <section class="method">
+    <h2>Sådan læses kategorierne</h2>
+    <p><strong>Understøttet:</strong> den konkrete efterprøvelige påstand kan genfindes i den citerede dokumentation. <strong>Ikke understøttet:</strong> den kilde, der bruges som belæg, modsiger eller bærer ikke påstanden. <strong>Kræver nuance:</strong> dele er dokumenterede, men formuleringen afhænger af afgrænsning, forudsætninger eller mangler uafhængig bekræftelse.</p>
+    <button class="reset" id="reset">Start forfra</button>
+  </section>
+
+  <footer>
+    Strange Facts er en kildebaseret oversigt over konkrete udsagn i politisk debat. Klik altid videre til originalkilden for fuld kontekst. Senest opdateret 18. september 2026.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const cards = [...document.querySelectorAll('.card')];
+  const filters = [...document.querySelectorAll('.pill[data-filter]')];
+  const count = document.getElementById('count');
+  const reset = document.getElementById('reset');
+  const seen = new Set();
+
+  function updateCount(){ count.textContent = seen.size; }
+
+  cards.forEach((card, index) => {
+    card.querySelectorAll('.guess').forEach(btn => {
+      btn.addEventListener('click', () => {
+        seen.add(index);
+        updateCount();
+        card.querySelector('.result').classList.add('open');
+        card.querySelectorAll('.guess').forEach(b => {
+          b.disabled = true;
+          b.classList.remove('picked');
+        });
+        btn.classList.add('picked');
+      });
+    });
+  });
+
+  filters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chosen = btn.dataset.filter;
+      filters.forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+      cards.forEach(card => {
+        card.classList.toggle('hidden', chosen !== 'alle' && card.dataset.topic !== chosen);
+      });
+    });
+  });
+
+  reset.addEventListener('click', () => {
+    seen.clear(); updateCount();
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      card.querySelector('.result').classList.remove('open');
+      card.querySelectorAll('.guess').forEach(b => {
+        b.disabled = false; b.classList.remove('picked');
+      });
+    });
+    filters.forEach((b,i) => b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false'));
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
