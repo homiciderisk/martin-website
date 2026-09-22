@@ -2,21 +2,39 @@
 <html lang="da">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Strange Facts – interaktivt, kildebaseret faktatjek af udsagn fra Mads Strange i politiske debatter.">
   <title>Strange Facts</title>
   <style>
     :root{
-      --bg:#f7f3eb;--paper:#fffdf8;--ink:#171717;--muted:#6b665d;--line:#d9d2c5;
-      --accent:#7b2cff;--accent2:#ff5a36;--good:#177245;--bad:#a72d2d;--nuance:#8a5b00;
+      --bg:#f7f3eb;--paper:#fffdf8;--ink:#171717;--muted:#6b665d;--line:#d9d2c5;--panel:#efe9de;--oninvert:#fff;
+      --accent:#7b2cff;--good:#177245;--bad:#a72d2d;--nuance:#8a5b00;
+      --good-bg:#e8f5ed;--bad-bg:#faeaea;--nuance-bg:#fff3d8;--notice-line:#e7cf96;
       --shadow:0 12px 40px rgba(32,24,10,.08);
+      box-sizing:border-box;
+      padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
     }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
+    @media (prefers-color-scheme:dark){
+      :root:not([data-theme="light"]){
+        --bg:#16140f;--paper:#211e18;--ink:#f1ece2;--muted:#aaa296;--line:#3a352c;--panel:#2a261f;--oninvert:#16140f;
+        --accent:#a978ff;--good:#6fd39c;--bad:#f08a8a;--nuance:#e7b95a;
+        --good-bg:#16301f;--bad-bg:#3a1c1c;--nuance-bg:#35290f;--notice-line:#5c4a1f;
+        --shadow:0 12px 40px rgba(0,0,0,.35);
+      }
+    }
+    :root[data-theme="dark"]{
+      --bg:#16140f;--paper:#211e18;--ink:#f1ece2;--muted:#aaa296;--line:#3a352c;--panel:#2a261f;--oninvert:#16140f;
+      --accent:#a978ff;--good:#6fd39c;--bad:#f08a8a;--nuance:#e7b95a;
+      --good-bg:#16301f;--bad-bg:#3a1c1c;--nuance-bg:#35290f;--notice-line:#5c4a1f;
+      --shadow:0 12px 40px rgba(0,0,0,.35);
+    }
+    *,*::before,*::after{box-sizing:inherit}
+    html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
     body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     a{color:inherit}
-    button,select{font:inherit}
+    button,select{font:inherit;color:inherit}
     button{cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     .wrap{max-width:1050px;margin:auto;padding:22px}
     header{padding:56px 0 30px}
     .kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--muted)}
@@ -25,13 +43,14 @@
     .lede{max-width:760px;font-size:1.08rem;color:var(--muted)}
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:28px 0}
     .pill,.guess,.reset{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px;font-weight:750}
-    .pill[aria-pressed="true"]{background:var(--ink);color:white;border-color:var(--ink)}
+    .pill[aria-pressed="true"]{background:var(--ink);color:var(--oninvert);border-color:var(--ink)}
     .score{margin-left:auto;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:800}
     .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
     .card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
     .card.hidden{display:none}
     .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.76rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
     .tag{border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+    .new{background:var(--accent);color:#fff;border-color:var(--accent)}
     blockquote{margin:18px 0 10px;font-size:1.23rem;line-height:1.35;font-weight:850;letter-spacing:-.02em}
     .context{font-size:.92rem;color:var(--muted)}
     .ask{margin-top:18px;font-size:.76rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
@@ -43,17 +62,18 @@
     .result{display:none;margin-top:18px;border-top:1px solid var(--line);padding-top:18px}
     .result.open{display:block}
     .verdict{display:inline-block;border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
-    .v-good{background:#e8f5ed;color:var(--good)}
-    .v-bad{background:#faeaea;color:var(--bad)}
-    .v-nuance{background:#fff3d8;color:var(--nuance)}
+    .v-good{background:var(--good-bg);color:var(--good)}
+    .v-bad{background:var(--bad-bg);color:var(--bad)}
+    .v-nuance{background:var(--nuance-bg);color:var(--nuance)}
     .result p{margin:.7em 0}
+    .sources{display:flex;flex-wrap:wrap;gap:4px 16px}
     .source{display:inline-block;margin-top:6px;font-weight:850;text-decoration-thickness:1.5px;text-underline-offset:3px}
-    .method{margin:28px 0 40px;padding:22px;border:1px solid var(--line);border-radius:22px;background:#efe9de}
+    .method{margin:28px 0 40px;padding:22px;border:1px solid var(--line);border-radius:22px;background:var(--panel)}
     .method h2{margin:0 0 8px;font-size:1.1rem}
     footer{padding:12px 0 42px;color:var(--muted);font-size:.86rem}
-    .notice{font-size:.85rem;background:#fff3d8;border:1px solid #e7cf96;border-radius:14px;padding:12px 14px;margin-top:16px}
+    .notice{font-size:.85rem;background:var(--nuance-bg);border:1px solid var(--notice-line);border-radius:14px;padding:12px 14px;margin-top:16px}
     @media(max-width:760px){.grid{grid-template-columns:1fr}.score{margin-left:0;width:100%}header{padding-top:34px}.wrap{padding:16px}}
-    @media(prefers-reduced-motion:no-preference){.card{transition:transform .18s ease,border-color .18s ease}.card:hover{transform:translateY(-2px)}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
 </head>
 <body>
@@ -70,11 +90,51 @@
     <button class="pill" data-filter="velfærd" aria-pressed="false">Velfærd</button>
     <button class="pill" data-filter="skat" aria-pressed="false">Skat</button>
     <button class="pill" data-filter="retssikkerhed" aria-pressed="false">Retssikkerhed</button>
+    <button class="pill" data-filter="medier" aria-pressed="false">Medier</button>
     <button class="pill" data-filter="politik" aria-pressed="false">Politik</button>
-    <div class="score" aria-live="polite">Udforsket: <span id="count">0</span>/7</div>
+    <div class="score" aria-live="polite">Udforsket: <span id="count">0</span>/<span id="total">0</span></div>
   </nav>
 
   <main class="grid" id="cards">
+
+    <article class="card" data-topic="medier" data-answer="bad">
+      <div class="meta"><span class="tag new">Ny</span><span class="tag">21. sep.</span><span>Mediestøtte</span></div>
+      <blockquote>Danskerne betaler de facto TV 2-korrespondent Jesper Steinmetz’ løn gennem mediestøtten.</blockquote>
+      <p class="context">Opslag på X i forbindelse med kritik af en TV 2-analyse af AfD’s fremgang ved delstatsvalget i Mecklenburg-Vorpommern.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-bad">Ikke understøttet</span>
+        <p>TV 2 er et statsejet aktieselskab, men Kulturministeriet oplyser, at TV 2 ikke modtager offentlig støtte og overvejende finansieres af abonnements- og reklameindtægter. Påstanden om mediestøtte har derfor ikke dækning.</p>
+        <p>Ifølge RADIO IIII slettede Strange opslaget efter mediets henvendelse. Liberal Alliances presseafdeling oplyste, at han ikke ønskede at kommentere.</p>
+        <div class="sources"><a class="source" href="https://radio4.dk/nyheder/mads-strange-fanget-i-ny-usand-paastand-uIkYbqWsNu4WKbY1mdi9" target="_blank" rel="noopener">Kilde: RADIO IIII ↗</a></div>
+      </div>
+    </article>
+
+    <article class="card" data-topic="skat" data-answer="bad">
+      <div class="meta"><span class="tag new">Ny</span><span class="tag">aug.–sep.</span><span>Gentofte Kommune</span></div>
+      <blockquote>Da Mærsk Mc-Kinney Møller døde i 2012, mistede Gentofte omkring 150 mio. kr. årligt i kommuneskat og måtte hæve skatten eller skære i udgifterne.</blockquote>
+      <p class="context">Påstanden indgik i flere Facebook-opslag som eksempel på, at ulighed kan gavne fællesskabet.</p>
+      <div class="ask">Hvad viser dokumentationen?</div>
+      <div class="choices">
+        <button class="guess" data-guess="good">Understøttet</button>
+        <button class="guess" data-guess="bad">Ikke understøttet</button>
+        <button class="guess" data-guess="nuance">Kræver nuance</button>
+      </div>
+      <div class="result">
+        <span class="verdict v-bad">Ikke understøttet</span>
+        <p>Fortællingen bygger på én Børsen-artikel fra 2012 med en anonym kilde i byrådet. Ifølge Berlingske faldt kommunens skatteindtægter ikke efter dødsfaldet, og der blev hverken skåret i udgifterne eller hævet skat.</p>
+        <p>Borgmester Michael Fenger (K), der sad i byrådet i 2012, kan ikke genkende påstanden og peger på, at et beløb af den størrelse næppe ville kunne mærkes på grund af den kommunale udligning. Strange har siden skrevet, at det er ærgerligt, at medier dengang angav et højere skattebidrag, end der senere syntes at være dokumentation for.</p>
+        <div class="sources">
+          <a class="source" href="https://www.berlingske.dk/politik/da-maersk-doede-manglede-gentofte-millioner-fortaeller-mads-strange-men-det-passer-ikke" target="_blank" rel="noopener">Kilde: Berlingske ↗</a>
+          <a class="source" href="https://piopio.dk/konservativ-borgmester-gaar-i-rette-med-ung-la-ordfoerer" target="_blank" rel="noopener">Kilde: Netavisen Pio ↗</a>
+        </div>
+      </div>
+    </article>
 
     <article class="card" data-topic="velfærd" data-answer="bad">
       <div class="meta"><span class="tag">16. sep.</span><span>Arne-pension</span></div>
@@ -89,7 +149,7 @@
       <div class="result">
         <span class="verdict v-bad">Ikke understøttet</span>
         <p>TjekDet gennemgik den undersøgelse, der blev henvist til. Her svarede 16,5 procent, at de slet ikke følte sig fysisk nedslidte. Omkring otte ud af ti angav derimod en eller anden grad af fysisk nedslidning.</p>
-        <a class="source" href="https://www.tjekdet.dk/faktatjek/mads-strange-og-joachim-b-olsen-fremsaetter-forkert-paastand-om-arne-pension" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+        <div class="sources"><a class="source" href="https://www.tjekdet.dk/faktatjek/mads-strange-og-joachim-b-olsen-fremsaetter-forkert-paastand-om-arne-pension" target="_blank" rel="noopener">Kilde: TjekDet ↗</a></div>
       </div>
     </article>
 
@@ -106,7 +166,7 @@
       <div class="result">
         <span class="verdict v-bad">Ikke understøttet</span>
         <p>En af forskerne bag studiet afviste den udlægning. Studiet ser på forskelle mellem personer med og uden handicap, ikke på om danske handicappede absolut set får dårligst hjælp blandt de 31 lande. Strange sagde senere, at han burde have formuleret sig mere præcist.</p>
-        <a class="source" href="https://www.tjekdet.dk/faktatjek/er-danmark-daarligst-i-europa-til-hjaelpe-handicappede-forsker-afviser-la-politikers" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+        <div class="sources"><a class="source" href="https://www.tjekdet.dk/faktatjek/er-danmark-daarligst-i-europa-til-hjaelpe-handicappede-forsker-afviser-la-politikers" target="_blank" rel="noopener">Kilde: TjekDet ↗</a></div>
       </div>
     </article>
 
@@ -123,7 +183,7 @@
       <div class="result">
         <span class="verdict v-nuance">Kræver nuance</span>
         <p>To økonomer vurderede over for TjekDet, at fastfrysningen af beløbsgrænser isoleret set giver højere indkomstskat, også for denne gruppe. Men udsagnet siger ikke noget om den samlede økonomiske effekt af hele regeringens pakke, blandt andet lavere fødevaremoms.</p>
-        <a class="source" href="https://www.tjekdet.dk/faktatjek/haever-regeringen-skatten-dem-der-tjener-under-58000-om-maaneden" target="_blank" rel="noopener">Kilde: TjekDet ↗</a>
+        <div class="sources"><a class="source" href="https://www.tjekdet.dk/faktatjek/haever-regeringen-skatten-dem-der-tjener-under-58000-om-maaneden" target="_blank" rel="noopener">Kilde: TjekDet ↗</a></div>
       </div>
     </article>
 
@@ -140,7 +200,7 @@
       <div class="result">
         <span class="verdict v-good">Understøttet</span>
         <p>Folketingets materiale henviser til ministeriets beregning på 17,4 mia. kr. årligt efter tilbageløb og adfærd, når restauranter holdes uden for regnestykket. Forudsætningen er vigtig, men selve tallet kan genfindes i det officielle materiale.</p>
-        <a class="source" href="https://www.ft.dk/samling/20252/almdel/sau/spm/216/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a>
+        <div class="sources"><a class="source" href="https://www.ft.dk/samling/20252/almdel/sau/spm/216/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a></div>
       </div>
     </article>
 
@@ -157,7 +217,7 @@
       <div class="result">
         <span class="verdict v-nuance">Kræver nuance</span>
         <p>Folketingets referat dokumenterer, at Strange fremsatte tallene 110 procent og 51 måneder. Ministeren svarede, at det beskrevne forløb lød urimeligt, men bekræftede ikke selv de konkrete tal i sit svar. Referatet dokumenterer derfor udsagnet, men er ikke i sig selv en uafhængig verifikation af tallene.</p>
-        <a class="source" href="https://www.ft.dk/forhandlinger/20252/20252M019_2026-08-26_1300.htm" target="_blank" rel="noopener">Kilde: Folketingets referat ↗</a>
+        <div class="sources"><a class="source" href="https://www.ft.dk/forhandlinger/20252/20252M019_2026-08-26_1300.htm" target="_blank" rel="noopener">Kilde: Folketingets referat ↗</a></div>
       </div>
     </article>
 
@@ -174,7 +234,7 @@
       <div class="result">
         <span class="verdict v-nuance">Kræver nuance</span>
         <p>Stillingen som borger- og retssikkerhedschef blev nedlagt. Men ministeren svarede i samme debat, at der tidligere var én retssikkerhedschef, mens der nu var ti koordinatorer i styrelserne. Formuleringen om, at kun én medarbejder havde til formål at sikre retssikkerhed, giver derfor et ufuldstændigt billede af organiseringen.</p>
-        <a class="source" href="https://www.ft.dk/samling/20252/spoergsmaal/s260/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a>
+        <div class="sources"><a class="source" href="https://www.ft.dk/samling/20252/spoergsmaal/s260/index.htm" target="_blank" rel="noopener">Kilde: Folketinget ↗</a></div>
       </div>
     </article>
 
@@ -191,7 +251,7 @@
       <div class="result">
         <span class="verdict v-good">Understøttet i substansen</span>
         <p>Folketingets ministeroversigt viser Morten Bødskov (S), Jeppe Bruus (S), Rasmus Stoklund (S), Ane Halsboe-Jørgensen (S) og derefter Jakob Engel-Schmidt (M) som skatte-/skatte- og vækstministre i den relevante årrække. Formuleringen “på fem forskellige år” er retorisk kompakt, men ministerrækken og partifordelingen kan genfindes i den officielle historik.</p>
-        <a class="source" href="https://www.ft.dk/da/folkestyret/regeringen/regeringer-siden-1953" target="_blank" rel="noopener">Kilde: Folketingets ministeroversigt ↗</a>
+        <div class="sources"><a class="source" href="https://www.ft.dk/da/folkestyret/regeringen/regeringer-siden-1953" target="_blank" rel="noopener">Kilde: Folketingets ministeroversigt ↗</a></div>
       </div>
     </article>
 
@@ -204,7 +264,7 @@
   </section>
 
   <footer>
-    Strange Facts er en kildebaseret oversigt over konkrete udsagn i politisk debat. Klik altid videre til originalkilden for fuld kontekst. Senest opdateret 18. september 2026.
+    Strange Facts er en kildebaseret oversigt over konkrete udsagn i politisk debat. Klik altid videre til originalkilden for fuld kontekst. Senest opdateret 22. september 2026.
   </footer>
 </div>
 
@@ -214,6 +274,7 @@
   const filters = [...document.querySelectorAll('.pill[data-filter]')];
   const count = document.getElementById('count');
   const reset = document.getElementById('reset');
+  document.getElementById('total').textContent = cards.length;
   const seen = new Set();
 
   function updateCount(){ count.textContent = seen.size; }
@@ -259,3 +320,4 @@
 </script>
 </body>
 </html>
+
