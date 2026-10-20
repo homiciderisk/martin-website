@@ -1344,6 +1344,7 @@ const audienceState={
   nickname:"",
   profileCode:"",
   profileUiMode:"guest",
+  backendVersion:0,
   myVotes:new Map(),
   allRows:[],
   settledRows:[]
@@ -2198,7 +2199,7 @@ function renderAudienceIdentity(){
 
   if(mode==="signed"){
     if(title)title.textContent=`Du gætter som ${audienceState.nickname}`;
-    if(text)text.textContent="Denne browser har husket din profil. Nye bud bliver automatisk gemt på dit nickname — du skal ikke logge ind igen her.";
+    if(text)text.textContent="Denne browser har husket din profil. Nye bud gemmes automatisk på dit nickname, og gæstebud fra denne browser bliver koblet til profilen.";
     if($("#audienceSignedName"))$("#audienceSignedName").textContent=audienceState.nickname;
     if(historyContext)historyContext.textContent=`Dine bud er samlet under ${audienceState.nickname} og kan åbnes på andre enheder med din profilkode.`;
   }else if(mode==="create"){
@@ -2466,8 +2467,44 @@ function renderAudienceHistory(){
     </div>`;
   }).join("");
 }
-async function loadMyAudienceVotes(){
-  if(!audienceApiConfigured())return;
+function mergeAudienceVotes(serverVotes,fallbackVotes){
+  const merged=new Map();
+  (serverVotes||[]).forEach(v=>merged.set(v.bet_id,v));
+  if(fallbackVotes){
+    for(const [id,v] of fallbackVotes.entries()){
+      if(!merged.has(id))merged.set(id,v);
+    }
+  }
+  return merged;
+}
+async function claimAudienceGuestVotes(fallbackVotes=null){
+  if(!hasAudienceProfile()||!audienceApiConfigured())return {claimed:0,votes:null,supported:false};
+  try{
+    const res=await audienceJsonp({action:"claim_votes",...audienceAuthParams()});
+    if(res?.ok){
+      if(Array.isArray(res.votes)){
+        audienceState.myVotes=mergeAudienceVotes(res.votes,fallbackVotes);
+        renderMyAudienceStats();
+        renderAudienceHistory();
+        if(audienceState.allRows.length)renderOpen(audienceState.allRows);
+      }
+      return {claimed:Number(res.claimed_votes)||0,votes:res.votes||null,supported:true};
+    }
+    if(res?.code==="bad_action")return {claimed:0,votes:null,supported:false};
+    throw new Error(res?.error||"Kunne ikke koble gæstebud til profilen.");
+  }catch(err){
+    // Preserve the votes locally even if the explicit migration endpoint
+    // is not available yet. They are never allowed to disappear from the UI.
+    if(fallbackVotes){
+      audienceState.myVotes=mergeAudienceVotes([],fallbackVotes);
+      renderMyAudienceStats();
+      renderAudienceHistory();
+    }
+    return {claimed:0,votes:null,supported:false,error:err};
+  }
+}
+async function loadMyAudienceVotes(fallbackVotes=null){
+  if(!audienceApiConfigured())return {claimed:0};
   try{
     const res=await audienceJsonp({action:"my_votes",...audienceAuthParams()});
     if(!res?.ok){
@@ -2478,17 +2515,24 @@ async function loadMyAudienceVotes(){
         renderAudienceIdentity();
         if($("#audienceLoginNickname"))$("#audienceLoginNickname").value=rememberedNick;
         setAudienceMessage("Din gemte profil kunne ikke bekræftes. Log ind igen med din profilkode.","bad");
-        return;
+        return {claimed:0};
       }
       throw new Error(res?.error||"Kunne ikke hente dine bud.");
     }
-    audienceState.myVotes=new Map((res.votes||[]).map(v=>[v.bet_id,v]));
+    audienceState.myVotes=mergeAudienceVotes(res.votes||[],fallbackVotes);
     if(res.nickname&&audienceState.profileCode)setNicknameLocal(res.nickname,audienceState.profileCode);
     renderMyAudienceStats();
     renderAudienceHistory();
     if(audienceState.allRows.length)renderOpen(audienceState.allRows);
+    return {claimed:Number(res.claimed_votes)||0};
   }catch(err){
+    if(fallbackVotes){
+      audienceState.myVotes=mergeAudienceVotes([],fallbackVotes);
+      renderMyAudienceStats();
+      renderAudienceHistory();
+    }
     setAudienceMessage(err.message,"bad");
+    return {claimed:0,error:err};
   }
 }
 async function createAudienceProfile(){
@@ -2496,6 +2540,10 @@ async function createAudienceProfile(){
   const input=$("#audienceCreateNickname");
   const nick=normalizeNickname(input?.value);
   if(nick.length<2){setAudienceMessage("Skriv et nickname på mindst 2 tegn.","bad");input?.focus();return}
+
+  // Snapshot every guest vote already visible in this browser BEFORE changing identity.
+  // These votes must never disappear during profile creation.
+  const guestVotesBefore=new Map(audienceState.myVotes);
 
   const button=$("#audienceCreateForm button[type=submit]");
   if(button){button.disabled=true;button.textContent="Opretter…";}
@@ -2521,9 +2569,27 @@ async function createAudienceProfile(){
 
     setNicknameLocal(res.nickname||nick,res.profile_code||"");
     showAudienceProfileCode(true,true);
-    setAudienceMessage("Profilen er oprettet. Gem profilkoden til den dag, du vil bruge profilen på en anden enhed.","good");
-    await loadMyAudienceVotes();
+
+    let claimed=Number(res.claimed_votes)||0;
+    const claim=await claimAudienceGuestVotes(guestVotesBefore);
+    claimed=Math.max(claimed,Number(claim.claimed)||0);
+
+    const loaded=await loadMyAudienceVotes(guestVotesBefore);
+    claimed=Math.max(claimed,Number(loaded?.claimed)||0);
+
+    const migratedText=claimed>0
+      ? ` ${claimed} tidligere ${claimed===1?"gæstebud er":"gæstebud er"} nu koblet til profilen.`
+      : (guestVotesBefore.size>0 ? " Dine tidligere gæstebud er bevaret på profilen." : "");
+
+    setAudienceMessage(
+      `Profilen er oprettet.${migratedText} Gem profilkoden til den dag, du vil bruge profilen på en anden enhed.`,
+      "good"
+    );
   }catch(err){
+    // Even a failed create must not wipe local guest history.
+    audienceState.myVotes=guestVotesBefore;
+    renderMyAudienceStats();
+    renderAudienceHistory();
     setAudienceMessage(err.message,"bad");
   }finally{
     if(button){button.disabled=false;button.textContent="Opret";}
@@ -2538,6 +2604,8 @@ async function loginAudienceProfile(){
   if(nick.length<2){setAudienceMessage("Skriv dit nickname.","bad");nickInput?.focus();return}
   if(!code){setAudienceMessage("Indtast din profilkode.","bad");codeInput?.focus();return}
 
+  const guestVotesBefore=new Map(audienceState.myVotes);
+
   const button=$("#audienceLoginForm button[type=submit]");
   if(button){button.disabled=true;button.textContent="Logger ind…";}
   try{
@@ -2551,9 +2619,22 @@ async function loginAudienceProfile(){
     if(!res?.ok)throw new Error(res?.error||"Kunne ikke logge ind.");
 
     setNicknameLocal(res.nickname||nick,code);
-    setAudienceMessage(`Velkommen tilbage, ${res.nickname||nick}. Denne browser husker dig nu.`,"good");
-    await loadMyAudienceVotes();
+
+    let claimed=Number(res.claimed_votes)||0;
+    const claim=await claimAudienceGuestVotes(guestVotesBefore);
+    claimed=Math.max(claimed,Number(claim.claimed)||0);
+
+    const loaded=await loadMyAudienceVotes(guestVotesBefore);
+    claimed=Math.max(claimed,Number(loaded?.claimed)||0);
+
+    const migratedText=claimed>0
+      ? ` ${claimed} ${claimed===1?"gæstebud fra denne browser er":"gæstebud fra denne browser er"} koblet til profilen.`
+      : "";
+    setAudienceMessage(`Velkommen tilbage, ${res.nickname||nick}.${migratedText} Denne browser husker dig nu.`,"good");
   }catch(err){
+    audienceState.myVotes=guestVotesBefore;
+    renderMyAudienceStats();
+    renderAudienceHistory();
     setAudienceMessage(err.message,"bad");
   }finally{
     if(button){button.disabled=false;button.textContent="Log ind";}
@@ -2577,6 +2658,7 @@ async function warmAudienceBackend(){
   try{
     const res=await audienceJsonp({action:"status"},9000);
     if(!res?.ok)throw new Error("Statusfejl");
+    audienceState.backendVersion=Number(res.version)||1;
     if(status){status.textContent="Lytterbud klar";status.classList.add("ok");}
   }catch(_){
     if(status){status.textContent="Prøver igen ved bud";status.classList.remove("ok");}
