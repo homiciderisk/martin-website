@@ -683,7 +683,6 @@ footer{
   white-space:nowrap;
 }
 .audience-api-status.ok{background:var(--green);border-color:var(--purple2);color:var(--purple2)}
-.audience-profile-code-wrap.is-hidden{display:none}
 .audience-profile-form{
   display:grid;
   grid-template-columns:1fr 1fr auto;
@@ -827,6 +826,172 @@ footer{
   .audience-leader-n{grid-column:2/-1;text-align:left;margin-top:-6px;padding-bottom:7px}
 }
 
+
+/* --- Intuitivt profil-flow: gæst / samme browser / ny browser --- */
+.audience-hidden{display:none!important}
+.audience-identity-panel{margin-bottom:18px}
+.audience-identity-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.audience-choice-button{
+  min-height:42px;
+  border:1px solid var(--purple2);
+  padding:9px 13px;
+  font-weight:900;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  cursor:pointer;
+  background:#fff;
+  color:var(--purple2);
+}
+.audience-choice-button.primary{background:var(--green);color:var(--purple2)}
+.audience-choice-button.secondary{background:var(--purple2);color:#fff}
+.audience-choice-button.quiet{background:#fff;color:var(--muted);border-color:var(--line)}
+.audience-choice-button:hover{background:var(--purple);color:var(--green);border-color:var(--purple2)}
+.audience-choice-button:disabled{opacity:.45;cursor:not-allowed}
+.audience-auth-pane{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+.audience-auth-heading{
+  display:grid;
+  gap:3px;
+  margin-bottom:11px;
+}
+.audience-auth-heading strong{
+  font-size:16px;
+  letter-spacing:-.02em;
+}
+.audience-auth-heading span{
+  color:var(--muted);
+  font-size:10px;
+  max-width:720px;
+}
+.audience-auth-form{
+  display:grid;
+  gap:10px;
+  align-items:end;
+}
+.audience-auth-form.create{grid-template-columns:minmax(180px,1fr) auto auto}
+.audience-auth-form.login{grid-template-columns:minmax(150px,1fr) minmax(150px,1fr) auto auto}
+.audience-auth-form label{
+  display:grid;
+  gap:5px;
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+}
+.audience-auth-form input{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--purple2);
+  background:#fff;
+  padding:9px 10px;
+  color:var(--ink);
+  font-size:16px;
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:500;
+}
+.audience-signed{
+  border:1px solid var(--purple2);
+  background:#f5ffe9;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.audience-signed-copy{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+.audience-check{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  display:grid;
+  place-items:center;
+  background:var(--green);
+  border:1px solid var(--purple2);
+  font-weight:950;
+}
+.audience-signed-copy strong{
+  display:block;
+  font-size:20px;
+  letter-spacing:-.03em;
+}
+.audience-signed-copy small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:2px;
+}
+.audience-signed-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:7px;
+}
+.audience-code-receipt{
+  margin-top:12px;
+  border:2px solid var(--purple2);
+  background:var(--lav);
+  padding:14px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:18px;
+  align-items:center;
+}
+.audience-code-receipt span{
+  display:block;
+  color:var(--purple2);
+  font-size:8px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.audience-code-receipt strong#audienceCodeValue{
+  display:block;
+  font-size:25px;
+  letter-spacing:.04em;
+  margin-top:2px;
+}
+.audience-code-receipt p{
+  margin:0;
+  color:var(--purple2);
+  font-size:10px;
+}
+.audience-vote-identity{
+  margin-top:10px;
+  font-size:10px;
+  color:var(--muted);
+}
+.audience-vote-identity strong{color:var(--purple2)}
+.audience-vote-identity a{
+  color:var(--purple);
+  font-weight:900;
+}
+@media(max-width:800px){
+  .audience-auth-form.create,.audience-auth-form.login{grid-template-columns:1fr}
+  .audience-signed{align-items:flex-start;flex-direction:column}
+  .audience-signed-actions{justify-content:flex-start}
+}
+@media(max-width:560px){
+  .audience-identity-actions,.audience-signed-actions{display:grid;grid-template-columns:1fr;width:100%}
+  .audience-choice-button{width:100%}
+  .audience-code-receipt{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -948,55 +1113,87 @@ footer{
       <div class="eyebrow">Dit eget odds</div>
       <h2>Kom og gæt med</h2>
     </div>
-    <p>Opret gerne et nickname, før du gætter. Det er valgfrit, men så kan dine bud følge dig over tid. Du kan også fortsætte anonymt — så er historikken knyttet til denne browser.</p>
+    <p>Du kan gå direkte til de åbne væddemål og gætte som gæst. Et nickname er kun nødvendigt, hvis du vil samle dine bud under ét navn, finde dem igen på andre enheder og senere kunne være med i Lytterligaen.</p>
   </div>
 
-  <div class="audience-grid">
-    <article class="audience-panel">
-      <div class="audience-panel-head">
-        <div>
-          <div class="eyebrow">Før du gætter · valgfrit</div>
-          <h3>Opret dit nickname</h3>
-        </div>
-        <span id="audienceBackendStatus" class="audience-api-status">Ikke forbundet</span>
+  <article class="audience-panel audience-identity-panel">
+    <div class="audience-panel-head">
+      <div>
+        <div class="eyebrow">Din lytterprofil</div>
+        <h3 id="audienceIdentityTitle">Du gætter som gæst</h3>
       </div>
-      <p class="audience-help">Et nickname samler dine bud under samme profil. Når der er kommet nok lytterbud, kan vi senere åbne en Lytterliga og se, om nogle lyttere konsekvent rammer bedre end panelet.</p>
-      <div class="audience-profile-form">
+      <span id="audienceBackendStatus" class="audience-api-status">Forbinder…</span>
+    </div>
+
+    <p id="audienceIdentityText" class="audience-help">
+      Du kan afgive bud med det samme. Opret et nickname, hvis du vil samle din historik og kunne åbne den igen på en anden telefon eller computer.
+    </p>
+
+    <div id="audienceGuestActions" class="audience-identity-actions">
+      <button id="audienceStartCreate" class="audience-choice-button primary" type="button">Opret nickname</button>
+      <button id="audienceStartLogin" class="audience-choice-button secondary" type="button">Jeg har allerede et nickname</button>
+    </div>
+
+    <div id="audienceCreatePane" class="audience-auth-pane audience-hidden">
+      <div class="audience-auth-heading">
+        <strong>Vælg dit nickname</strong>
+        <span>Efter oprettelsen får du en profilkode. Denne browser husker dig automatisk; gem koden, hvis du senere vil bruge profilen på en anden enhed.</span>
+      </div>
+      <form id="audienceCreateForm" class="audience-auth-form create">
         <label>
           <span>Nickname</span>
-          <input id="audienceNickname" maxlength="24" autocomplete="nickname" placeholder="fx OddsOraklet">
+          <input id="audienceCreateNickname" maxlength="24" autocomplete="nickname" placeholder="fx OddsOraklet">
         </label>
-        <label id="audienceProfileCodeWrap" class="audience-profile-code-wrap is-hidden">
-          <span id="audienceProfileCodeLabel">Profilkode</span>
-          <input id="audienceProfileCode" maxlength="24" autocomplete="off" placeholder="indtast din profilkode">
-        </label>
-        <button id="audienceProfileButton" type="button">Opret nickname</button>
-      </div>
-      <div id="audienceProfileMessage" class="audience-message" aria-live="polite"></div>
-      <div class="audience-profile-tip"><strong>Gem profilkoden.</strong> Når du opretter et nickname, får du en profilkode. Den er nøglen til at åbne dit nickname og dine tidligere bud på en anden browser eller enhed. Koden gemmes ikke i læsbar form på serveren, så gem den selv et sikkert sted.</div>
-      <div id="myAudienceStats" class="audience-my-stats"></div>
-    </article>
+        <button class="audience-choice-button primary" type="submit">Opret</button>
+        <button id="audienceCancelCreate" class="audience-choice-button quiet" type="button">Fortryd</button>
+      </form>
+    </div>
 
-    <article class="audience-panel">
-      <div class="audience-panel-head">
+    <div id="audienceLoginPane" class="audience-auth-pane audience-hidden">
+      <div class="audience-auth-heading">
+        <strong>Åbn din eksisterende profil</strong>
+        <span>På en ny browser eller telefon skal du bruge både dit nickname og den profilkode, du fik ved oprettelsen.</span>
+      </div>
+      <form id="audienceLoginForm" class="audience-auth-form login">
+        <label>
+          <span>Nickname</span>
+          <input id="audienceLoginNickname" maxlength="24" autocomplete="nickname" placeholder="fx OddsOraklet">
+        </label>
+        <label>
+          <span>Profilkode</span>
+          <input id="audienceLoginCode" maxlength="24" autocomplete="off" placeholder="fx F7K9-X2P4">
+        </label>
+        <button class="audience-choice-button primary" type="submit">Log ind</button>
+        <button id="audienceCancelLogin" class="audience-choice-button quiet" type="button">Fortryd</button>
+      </form>
+    </div>
+
+    <div id="audienceSignedIn" class="audience-signed audience-hidden">
+      <div class="audience-signed-copy">
+        <span class="audience-check">✓</span>
         <div>
-          <div class="eyebrow">Hvorfor profil?</div>
-          <h3>To gode grunde</h3>
+          <strong id="audienceSignedName">Nickname</strong>
+          <small>Denne browser husker dig automatisk. Du behøver ikke profilkoden igen her.</small>
         </div>
       </div>
-      <div class="audience-why">
-        <div class="audience-reason">
-          <strong>1. Dit nickname</strong>
-          <p>Dine sandsynlighedsbud kan samles under ét navn over tid. Det gør det muligt at finde din egen historik igen — og senere måle, hvor godt du faktisk rammer.</p>
-        </div>
-        <div class="audience-reason">
-          <strong>2. Din profilkode</strong>
-          <p>Nicknamet er offentligt, men profilkoden er din private nøgle. Med den kan du hente samme profil på en ny telefon eller computer uden at skulle oprette en traditionel konto.</p>
-        </div>
+      <div class="audience-signed-actions">
+        <button id="audienceGoHistory" class="audience-choice-button secondary" type="button">Mine bud</button>
+        <button id="audienceShowCode" class="audience-choice-button quiet" type="button">Vis min profilkode</button>
+        <button id="audienceSwitchUser" class="audience-choice-button quiet" type="button">Skift bruger</button>
       </div>
-      <p class="audience-help" style="margin-top:14px">Vil du bare prøve? Du behøver ikke oprette noget. Anonyme bud virker stadig, men kan kun genfindes fra den browser, hvor de blev afgivet.</p>
-    </article>
-  </div>
+    </div>
+
+    <div id="audienceCodeReceipt" class="audience-code-receipt audience-hidden">
+      <div>
+        <span id="audienceCodeEyebrow">Din profilkode</span>
+        <strong id="audienceCodeValue">—</strong>
+      </div>
+      <p><strong>Gem koden.</strong> Den er din nøgle til profilen på en ny telefon eller computer. På denne browser bliver du husket automatisk.</p>
+    </div>
+
+    <div id="audienceProfileMessage" class="audience-message" aria-live="polite"></div>
+    <div id="myAudienceStats" class="audience-my-stats" hidden></div>
+  </article>
 
   <article class="audience-panel audience-history-panel">
     <div class="audience-panel-head">
@@ -1006,6 +1203,7 @@ footer{
       </div>
       <button id="audienceHistoryRefresh" class="audience-small-button" type="button">Opdater</button>
     </div>
+    <p id="audienceHistoryContext" class="audience-help">Som gæst er historikken knyttet til denne browser. Med et nickname kan den følge dig på tværs af enheder.</p>
     <div id="audienceHistory" class="audience-history"><div class="empty">Dine bud vises her, når du har afgivet det første.</div></div>
   </article>
 </section>
@@ -1069,6 +1267,7 @@ const audienceState={
   userId:null,
   nickname:"",
   profileCode:"",
+  profileUiMode:"guest",
   myVotes:new Map(),
   allRows:[],
   settledRows:[]
@@ -1829,12 +2028,19 @@ function newAudienceId(){
 function initAudienceIdentity(){
   audienceState.userId=storageGet("user_id")||newAudienceId();
   storageSet("user_id",audienceState.userId);
-  audienceState.nickname=storageGet("nickname");
+  audienceState.nickname=normalizeNickname(storageGet("nickname"));
   audienceState.profileCode=storageGet("profile_code");
-  const nick=$("#audienceNickname"), code=$("#audienceProfileCode");
-  if(nick)nick.value=audienceState.nickname;
-  if(code)code.value="";
-  setProfileCodeVisible(false);
+
+  if(audienceState.nickname&&audienceState.profileCode){
+    audienceState.profileUiMode="signed";
+  }else if(audienceState.nickname){
+    // Compatibility with older versions that may have stored a nickname
+    // without a usable profile code.
+    audienceState.profileUiMode="login";
+  }else{
+    audienceState.profileUiMode="guest";
+  }
+  renderAudienceIdentity();
 }
 function normalizeNickname(v){return String(v||"").trim().replace(/\s+/g," ").slice(0,24)}
 function isoDateOnly(d){
@@ -1882,27 +2088,96 @@ function setAudienceMessage(text,kind=""){
   el.textContent=text||"";
   el.className="audience-message"+(kind?" "+kind:"");
 }
-function setProfileCodeVisible(show,{login=false,created=false}={}){
-  const wrap=$("#audienceProfileCodeWrap");
-  const label=$("#audienceProfileCodeLabel");
-  const btn=$("#audienceProfileButton");
-  if(wrap)wrap.classList.toggle("is-hidden",!show);
-  if(label)label.textContent=created?"Din profilkode":"Profilkode";
-  if(btn && !btn.disabled)btn.textContent=login?"Log ind":"Opret nickname";
+function hasAudienceProfile(){
+  return Boolean(audienceState.nickname&&audienceState.profileCode);
 }
-function syncInlineNicknames(){
-  document.querySelectorAll(".audience-inline-nick input").forEach(i=>{i.value=audienceState.nickname});
+function setHidden(selector,hidden){
+  const el=$(selector);
+  if(el)el.classList.toggle("audience-hidden",Boolean(hidden));
+}
+function renderAudienceIdentity(){
+  const signed=hasAudienceProfile();
+  const mode=signed?"signed":audienceState.profileUiMode;
+  const title=$("#audienceIdentityTitle");
+  const text=$("#audienceIdentityText");
+  const historyContext=$("#audienceHistoryContext");
+
+  setHidden("#audienceGuestActions",mode!=="guest");
+  setHidden("#audienceCreatePane",mode!=="create");
+  setHidden("#audienceLoginPane",mode!=="login");
+  setHidden("#audienceSignedIn",mode!=="signed");
+
+  if(mode!=="signed")setHidden("#audienceCodeReceipt",true);
+
+  if(mode==="signed"){
+    if(title)title.textContent=`Du gætter som ${audienceState.nickname}`;
+    if(text)text.textContent="Denne browser har husket din profil. Nye bud bliver automatisk gemt på dit nickname — du skal ikke logge ind igen her.";
+    if($("#audienceSignedName"))$("#audienceSignedName").textContent=audienceState.nickname;
+    if(historyContext)historyContext.textContent=`Dine bud er samlet under ${audienceState.nickname} og kan åbnes på andre enheder med din profilkode.`;
+  }else if(mode==="create"){
+    if(title)title.textContent="Vælg dit nickname";
+    if(text)text.textContent="Du kan stadig gætte som gæst. Opret kun et nickname, hvis du vil samle dine bud under ét navn.";
+    if(historyContext)historyContext.textContent="Som gæst er historikken knyttet til denne browser. Opretter du et nickname, bliver dine eksisterende gæstebud automatisk koblet på profilen.";
+  }else if(mode==="login"){
+    if(title)title.textContent="Log ind på dit nickname";
+    if(text)text.textContent="Bruger du en ny telefon eller browser, kan du åbne din eksisterende profil med nickname og profilkode.";
+    if(historyContext)historyContext.textContent="Når du logger ind, hentes dine tidligere bud fra din profil.";
+  }else{
+    if(title)title.textContent="Du gætter som gæst";
+    if(text)text.textContent="Du kan afgive bud med det samme. Opret et nickname, hvis du vil samle din historik og kunne åbne den igen på en anden telefon eller computer.";
+    if(historyContext)historyContext.textContent="Som gæst er historikken knyttet til denne browser. Med et nickname kan den følge dig på tværs af enheder.";
+  }
+
+  updateAudienceBetIdentityLabels();
+}
+function setAudienceProfileMode(mode,prefill=""){
+  audienceState.profileUiMode=mode;
+  setAudienceMessage("");
+  if(mode==="create"){
+    const input=$("#audienceCreateNickname");
+    if(input){
+      input.value=prefill||"";
+      setTimeout(()=>input.focus(),0);
+    }
+  }
+  if(mode==="login"){
+    const input=$("#audienceLoginNickname");
+    if(input){
+      input.value=prefill||audienceState.nickname||"";
+      setTimeout(()=>input.focus(),0);
+    }
+    const code=$("#audienceLoginCode");
+    if(code)code.value="";
+  }
+  renderAudienceIdentity();
 }
 function setNicknameLocal(nick,code){
   audienceState.nickname=normalizeNickname(nick);
-  if(code!==undefined&&code!==null&&code!=="")audienceState.profileCode=String(code);
+  audienceState.profileCode=String(code||audienceState.profileCode||"");
   storageSet("nickname",audienceState.nickname);
   storageSet("profile_code",audienceState.profileCode);
-  if($("#audienceNickname"))$("#audienceNickname").value=audienceState.nickname;
-  const codeInput=$("#audienceProfileCode");
-  const codeWrap=$("#audienceProfileCodeWrap");
-  if(codeInput && codeWrap && !codeWrap.classList.contains("is-hidden"))codeInput.value=audienceState.profileCode;
-  syncInlineNicknames();
+  audienceState.profileUiMode=hasAudienceProfile()?"signed":"guest";
+  renderAudienceIdentity();
+}
+function clearNicknameLocal(){
+  audienceState.nickname="";
+  audienceState.profileCode="";
+  storageSet("nickname","");
+  storageSet("profile_code","");
+  audienceState.profileUiMode="guest";
+  setHidden("#audienceCodeReceipt",true);
+  renderAudienceIdentity();
+}
+function showAudienceProfileCode(show=true,created=false){
+  const box=$("#audienceCodeReceipt");
+  const value=$("#audienceCodeValue");
+  const eyebrow=$("#audienceCodeEyebrow");
+  const button=$("#audienceShowCode");
+  if(!box||!value)return;
+  value.textContent=audienceState.profileCode||"—";
+  if(eyebrow)eyebrow.textContent=created?"Gem denne profilkode":"Din profilkode";
+  box.classList.toggle("audience-hidden",!show);
+  if(button)button.textContent=show?"Skjul profilkode":"Vis min profilkode";
 }
 function audienceAuthParams(){
   return {
@@ -1918,6 +2193,16 @@ function settledOutcomeMap(){
 }
 function rowByBetId(id){
   return audienceState.allRows.find(r=>betIdForRow(r)===id)||null;
+}
+function audienceBetIdentityHtml(){
+  return hasAudienceProfile()
+    ? `Buddet gemmes som <strong>${esc(audienceState.nickname)}</strong>.`
+    : `Du gætter som gæst. <a href="#lytterne" class="audience-profile-link">Gem dine bud med et nickname</a>.`;
+}
+function updateAudienceBetIdentityLabels(){
+  document.querySelectorAll(".audience-vote-identity").forEach(el=>{
+    el.innerHTML=audienceBetIdentityHtml();
+  });
 }
 function revealCrowd(container,myVote,crowd){
   if(!container)return;
@@ -1948,7 +2233,7 @@ function revealCrowd(container,myVote,crowd){
     <div class="crowd-result-head">
       <div>
         <div class="meta">Lytterbud</div>
-        <div class="crowd-wait">${n} ${n===1?"bud":"bud"}</div>
+        <div class="crowd-wait">${n} bud</div>
       </div>
       <div class="crowd-n">Gennemsnittet vises,<br>når der er mindst 4 bud.<br>Dit bud: ${Math.round(+myVote.probability)}%</div>
     </div>
@@ -1982,7 +2267,6 @@ async function submitAudienceVote(r,container){
   const submit=container.querySelector(".audience-submit");
   const note=container.querySelector(".audience-vote-note");
   const probability=Math.max(0,Math.min(100,Number(slider?.value)));
-  const nickname=audienceState.nickname;
   submit.disabled=true;submit.textContent="Gemmer…";
   if(note)note.textContent="";
   try{
@@ -1996,17 +2280,17 @@ async function submitAudienceVote(r,container){
     });
     if(!res?.ok){
       if(res?.code==="nickname_taken"){
-        throw new Error("Det nickname er allerede taget. Log ind med profilkoden eller vælg et andet.");
+        throw new Error("Profilen kunne ikke bekræftes. Log ind igen under “Kom og gæt med”.");
       }
       throw new Error(res?.error||"Buddet kunne ikke gemmes.");
     }
-    if(res.nickname||res.profile_code){
-      setNicknameLocal(res.nickname||nickname,res.profile_code||audienceState.profileCode);
-      if(res.profile_code_created){
-        setAudienceMessage(`Nickname oprettet. Din profilkode er ${res.profile_code}. Gem den, hvis du vil bruge profilen på en anden enhed.`,"good");
-      }
-    }
-    const myVote={bet_id:betIdForRow(r),probability:+res.vote.probability,question:r.question,question_date:isoDateOnly(r.questionDate||r.effectiveDate),timestamp:res.vote.timestamp};
+    const myVote={
+      bet_id:betIdForRow(r),
+      probability:+res.vote.probability,
+      question:r.question,
+      question_date:isoDateOnly(r.questionDate||r.effectiveDate),
+      timestamp:res.vote.timestamp
+    };
     audienceState.myVotes.set(myVote.bet_id,myVote);
     revealCrowd(container,myVote,res.crowd||{});
     renderMyAudienceStats();
@@ -2027,6 +2311,7 @@ function audienceBetMarkup(r){
       </div>
       <input class="audience-slider" type="range" min="0" max="100" step="1" value="50" aria-label="Sandsynlighed for ja">
       <div class="audience-slider-labels"><span>0 % · sikkert nej</span><span>100 % · sikkert ja</span></div>
+      <div class="audience-vote-identity">${audienceBetIdentityHtml()}</div>
       <div class="audience-vote-actions">
         <button type="button" class="audience-submit" ${configured?"":"disabled"}>Afgiv bud</button>
       </div>
@@ -2040,6 +2325,9 @@ function wireAudienceBet(r,details){
   const slider=container.querySelector(".audience-slider"),submit=container.querySelector(".audience-submit");
   slider?.addEventListener("input",()=>updateVoteValue(container));
   submit?.addEventListener("click",()=>submitAudienceVote(r,container));
+  container.querySelector(".audience-profile-link")?.addEventListener("click",()=>{
+    setAudienceProfileMode("create");
+  });
   const existing=audienceState.myVotes.get(betIdForRow(r));
   if(existing){
     slider.value=existing.probability;
@@ -2053,6 +2341,12 @@ function wireAudienceBet(r,details){
 function renderMyAudienceStats(){
   const root=$("#myAudienceStats");if(!root)return;
   const votes=[...audienceState.myVotes.values()];
+  if(!votes.length){
+    root.innerHTML="";
+    root.hidden=true;
+    return;
+  }
+  root.hidden=false;
   const settled=[];
   votes.forEach(v=>{
     const r=rowByBetId(v.bet_id);
@@ -2069,7 +2363,10 @@ function renderMyAudienceStats(){
 function renderAudienceHistory(){
   const root=$("#audienceHistory");if(!root)return;
   const votes=[...audienceState.myVotes.values()].sort((a,b)=>String(b.timestamp||"").localeCompare(String(a.timestamp||"")));
-  if(!votes.length){root.innerHTML='<div class="empty">Dine bud vises her, når du har afgivet det første.</div>';return}
+  if(!votes.length){
+    root.innerHTML='<div class="empty">Dine bud vises her, når du har afgivet det første.</div>';
+    return;
+  }
   root.innerHTML=votes.slice(0,30).map(v=>{
     const r=rowByBetId(v.bet_id);
     const settled=r&&(r.outcome===0||r.outcome===1);
@@ -2086,63 +2383,116 @@ async function loadMyAudienceVotes(){
   if(!audienceApiConfigured())return;
   try{
     const res=await audienceJsonp({action:"my_votes",...audienceAuthParams()});
-    if(!res?.ok)throw new Error(res?.error||"Kunne ikke hente dine bud.");
+    if(!res?.ok){
+      if(res?.code==="profile_auth_failed"&&audienceState.nickname){
+        const rememberedNick=audienceState.nickname;
+        clearNicknameLocal();
+        audienceState.profileUiMode="login";
+        renderAudienceIdentity();
+        if($("#audienceLoginNickname"))$("#audienceLoginNickname").value=rememberedNick;
+        setAudienceMessage("Din gemte profil kunne ikke bekræftes. Log ind igen med din profilkode.","bad");
+        return;
+      }
+      throw new Error(res?.error||"Kunne ikke hente dine bud.");
+    }
     audienceState.myVotes=new Map((res.votes||[]).map(v=>[v.bet_id,v]));
-    if(res.nickname)setNicknameLocal(res.nickname,res.profile_code||audienceState.profileCode);
-    renderMyAudienceStats();renderAudienceHistory();
-    // Re-render open list so returning voters immediately unlock their crowd result.
+    if(res.nickname&&audienceState.profileCode)setNicknameLocal(res.nickname,audienceState.profileCode);
+    renderMyAudienceStats();
+    renderAudienceHistory();
     if(audienceState.allRows.length)renderOpen(audienceState.allRows);
-  }catch(err){setAudienceMessage(err.message,"bad")}
+  }catch(err){
+    setAudienceMessage(err.message,"bad");
+  }
 }
-async function audienceProfileLogin(){
-  if(!audienceApiConfigured()){setAudienceMessage("Backend er ikke forbundet endnu.","bad");return}
-  const nick=normalizeNickname($("#audienceNickname")?.value);
-  const code=String($("#audienceProfileCode")?.value||"").trim();
-  if(nick.length<2){setAudienceMessage("Skriv et nickname på mindst 2 tegn.","bad");return}
+async function createAudienceProfile(){
+  if(!audienceApiConfigured()){setAudienceMessage("Lytterserveren er ikke klar endnu.","bad");return}
+  const input=$("#audienceCreateNickname");
+  const nick=normalizeNickname(input?.value);
+  if(nick.length<2){setAudienceMessage("Skriv et nickname på mindst 2 tegn.","bad");input?.focus();return}
 
-  const btn=$("#audienceProfileButton");
-  btn.disabled=true;
-  btn.textContent=code?"Logger ind…":"Opretter…";
+  const button=$("#audienceCreateForm button[type=submit]");
+  if(button){button.disabled=true;button.textContent="Opretter…";}
+  try{
+    const res=await audienceJsonp({
+      action:"profile",
+      nickname:nick,
+      profile_code:"",
+      create:"1",
+      user_id:audienceState.userId
+    });
+    if(!res?.ok){
+      if(res?.code==="nickname_taken"){
+        audienceState.profileUiMode="login";
+        renderAudienceIdentity();
+        if($("#audienceLoginNickname"))$("#audienceLoginNickname").value=nick;
+        setAudienceMessage("Det nickname findes allerede. Hvis det er dit, så log ind med profilkoden.","bad");
+        $("#audienceLoginCode")?.focus();
+        return;
+      }
+      throw new Error(res?.error||"Profilen kunne ikke oprettes.");
+    }
 
+    setNicknameLocal(res.nickname||nick,res.profile_code||"");
+    showAudienceProfileCode(true,true);
+    setAudienceMessage("Profilen er oprettet. Gem profilkoden til den dag, du vil bruge profilen på en anden enhed.","good");
+    await loadMyAudienceVotes();
+  }catch(err){
+    setAudienceMessage(err.message,"bad");
+  }finally{
+    if(button){button.disabled=false;button.textContent="Opret";}
+  }
+}
+async function loginAudienceProfile(){
+  if(!audienceApiConfigured()){setAudienceMessage("Lytterserveren er ikke klar endnu.","bad");return}
+  const nickInput=$("#audienceLoginNickname");
+  const codeInput=$("#audienceLoginCode");
+  const nick=normalizeNickname(nickInput?.value);
+  const code=String(codeInput?.value||"").trim();
+  if(nick.length<2){setAudienceMessage("Skriv dit nickname.","bad");nickInput?.focus();return}
+  if(!code){setAudienceMessage("Indtast din profilkode.","bad");codeInput?.focus();return}
+
+  const button=$("#audienceLoginForm button[type=submit]");
+  if(button){button.disabled=true;button.textContent="Logger ind…";}
   try{
     const res=await audienceJsonp({
       action:"profile",
       nickname:nick,
       profile_code:code,
-      create:code?"0":"1",
+      create:"0",
       user_id:audienceState.userId
     });
+    if(!res?.ok)throw new Error(res?.error||"Kunne ikke logge ind.");
 
-    if(!res?.ok){
-      if(res?.code==="nickname_taken"){
-        setProfileCodeVisible(true,{login:true});
-        $("#audienceProfileCode")?.focus();
-        setAudienceMessage("Nicknamet findes allerede. Indtast din profilkode for at logge ind.","bad");
-        return;
-      }
-      throw new Error(res?.error||"Profilen kunne ikke åbnes.");
-    }
-
-    setNicknameLocal(res.nickname||nick,res.profile_code||code);
-
-    if(res.created){
-      setProfileCodeVisible(true,{created:true});
-      if($("#audienceProfileCode"))$("#audienceProfileCode").value=res.profile_code||audienceState.profileCode;
-      setAudienceMessage(`Profil oprettet. Din profilkode er ${res.profile_code}. Gem den et sikkert sted.`,"good");
-    }else{
-      setProfileCodeVisible(true,{login:true});
-      setAudienceMessage("Du er logget ind på profilen.","good");
-    }
-
+    setNicknameLocal(res.nickname||nick,code);
+    setAudienceMessage(`Velkommen tilbage, ${res.nickname||nick}. Denne browser husker dig nu.`,"good");
     await loadMyAudienceVotes();
   }catch(err){
     setAudienceMessage(err.message,"bad");
   }finally{
-    btn.disabled=false;
-    const wrap=$("#audienceProfileCodeWrap");
-    const visible=wrap && !wrap.classList.contains("is-hidden");
-    const hasCode=String($("#audienceProfileCode")?.value||"").trim().length>0;
-    btn.textContent=visible&&hasCode?"Log ind":"Opret nickname";
+    if(button){button.disabled=false;button.textContent="Log ind";}
+  }
+}
+async function switchAudienceUser(){
+  clearNicknameLocal();
+  audienceState.myVotes=new Map();
+  renderMyAudienceStats();
+  renderAudienceHistory();
+  setAudienceMessage("Du gætter nu som gæst. Din gamle profil er ikke slettet — du kan logge ind på den igen når som helst.","good");
+  await loadMyAudienceVotes();
+}
+async function warmAudienceBackend(){
+  const status=$("#audienceBackendStatus");
+  if(!audienceApiConfigured()){
+    if(status){status.textContent="Mangler backend";status.classList.remove("ok");}
+    return;
+  }
+  if(status){status.textContent="Forbinder…";status.classList.remove("ok");}
+  try{
+    const res=await audienceJsonp({action:"status"},9000);
+    if(!res?.ok)throw new Error("Statusfejl");
+    if(status){status.textContent="Lytterbud klar";status.classList.add("ok");}
+  }catch(_){
+    if(status){status.textContent="Prøver igen ved bud";status.classList.remove("ok");}
   }
 }
 async function loadAudienceLeaderboard(){
@@ -2163,14 +2513,32 @@ async function loadAudienceLeaderboard(){
 }
 function initAudienceUi(){
   initAudienceIdentity();
-  const status=$("#audienceBackendStatus");
-  if(status){
-    status.textContent=audienceApiConfigured()?"Forbundet":"Mangler backend";
-    status.classList.toggle("ok",audienceApiConfigured());
-  }
-  $("#audienceProfileButton")?.addEventListener("click",audienceProfileLogin);
-  $("#audienceHistoryRefresh")?.addEventListener("click",loadMyAudienceVotes);
+  warmAudienceBackend();
 
+  $("#audienceStartCreate")?.addEventListener("click",()=>setAudienceProfileMode("create"));
+  $("#audienceStartLogin")?.addEventListener("click",()=>setAudienceProfileMode("login"));
+  $("#audienceCancelCreate")?.addEventListener("click",()=>setAudienceProfileMode("guest"));
+  $("#audienceCancelLogin")?.addEventListener("click",()=>setAudienceProfileMode("guest"));
+
+  $("#audienceCreateForm")?.addEventListener("submit",e=>{
+    e.preventDefault();
+    createAudienceProfile();
+  });
+  $("#audienceLoginForm")?.addEventListener("submit",e=>{
+    e.preventDefault();
+    loginAudienceProfile();
+  });
+
+  $("#audienceGoHistory")?.addEventListener("click",()=>{
+    $("#audienceHistory")?.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  $("#audienceShowCode")?.addEventListener("click",()=>{
+    const box=$("#audienceCodeReceipt");
+    const currentlyHidden=!box||box.classList.contains("audience-hidden");
+    showAudienceProfileCode(currentlyHidden,false);
+  });
+  $("#audienceSwitchUser")?.addEventListener("click",switchAudienceUser);
+  $("#audienceHistoryRefresh")?.addEventListener("click",loadMyAudienceVotes);
 }
 function refreshAudienceAfterMainData(rows,settled){
   audienceState.allRows=rows;
