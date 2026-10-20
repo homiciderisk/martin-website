@@ -683,6 +683,7 @@ footer{
   white-space:nowrap;
 }
 .audience-api-status.ok{background:var(--green);border-color:var(--purple2);color:var(--purple2)}
+.audience-profile-code-wrap.is-hidden{display:none}
 .audience-profile-form{
   display:grid;
   grid-template-columns:1fr 1fr auto;
@@ -965,14 +966,14 @@ footer{
           <span>Nickname</span>
           <input id="audienceNickname" maxlength="24" autocomplete="nickname" placeholder="fx OddsOraklet">
         </label>
-        <label>
-          <span>Profilkode</span>
-          <input id="audienceProfileCode" maxlength="24" autocomplete="off" placeholder="kun hvis du allerede har en profil">
+        <label id="audienceProfileCodeWrap" class="audience-profile-code-wrap is-hidden">
+          <span id="audienceProfileCodeLabel">Profilkode</span>
+          <input id="audienceProfileCode" maxlength="24" autocomplete="off" placeholder="indtast din profilkode">
         </label>
-        <button id="audienceProfileButton" type="button">Opret / log ind</button>
+        <button id="audienceProfileButton" type="button">Opret nickname</button>
       </div>
       <div id="audienceProfileMessage" class="audience-message" aria-live="polite"></div>
-      <div class="audience-profile-tip"><strong>Gem profilkoden.</strong> Den er nøglen til at åbne dit nickname og dine tidligere bud på en anden browser eller enhed. Koden gemmes ikke i læsbar form på serveren, så gem den selv et sikkert sted.</div>
+      <div class="audience-profile-tip"><strong>Gem profilkoden.</strong> Når du opretter et nickname, får du en profilkode. Den er nøglen til at åbne dit nickname og dine tidligere bud på en anden browser eller enhed. Koden gemmes ikke i læsbar form på serveren, så gem den selv et sikkert sted.</div>
       <div id="myAudienceStats" class="audience-my-stats"></div>
     </article>
 
@@ -1832,7 +1833,8 @@ function initAudienceIdentity(){
   audienceState.profileCode=storageGet("profile_code");
   const nick=$("#audienceNickname"), code=$("#audienceProfileCode");
   if(nick)nick.value=audienceState.nickname;
-  if(code)code.value=audienceState.profileCode;
+  if(code)code.value="";
+  setProfileCodeVisible(false);
 }
 function normalizeNickname(v){return String(v||"").trim().replace(/\s+/g," ").slice(0,24)}
 function isoDateOnly(d){
@@ -1880,6 +1882,14 @@ function setAudienceMessage(text,kind=""){
   el.textContent=text||"";
   el.className="audience-message"+(kind?" "+kind:"");
 }
+function setProfileCodeVisible(show,{login=false,created=false}={}){
+  const wrap=$("#audienceProfileCodeWrap");
+  const label=$("#audienceProfileCodeLabel");
+  const btn=$("#audienceProfileButton");
+  if(wrap)wrap.classList.toggle("is-hidden",!show);
+  if(label)label.textContent=created?"Din profilkode":"Profilkode";
+  if(btn && !btn.disabled)btn.textContent=login?"Log ind":"Opret nickname";
+}
 function syncInlineNicknames(){
   document.querySelectorAll(".audience-inline-nick input").forEach(i=>{i.value=audienceState.nickname});
 }
@@ -1889,7 +1899,9 @@ function setNicknameLocal(nick,code){
   storageSet("nickname",audienceState.nickname);
   storageSet("profile_code",audienceState.profileCode);
   if($("#audienceNickname"))$("#audienceNickname").value=audienceState.nickname;
-  if($("#audienceProfileCode"))$("#audienceProfileCode").value=audienceState.profileCode;
+  const codeInput=$("#audienceProfileCode");
+  const codeWrap=$("#audienceProfileCodeWrap");
+  if(codeInput && codeWrap && !codeWrap.classList.contains("is-hidden"))codeInput.value=audienceState.profileCode;
   syncInlineNicknames();
 }
 function audienceAuthParams(){
@@ -2087,18 +2099,51 @@ async function audienceProfileLogin(){
   const nick=normalizeNickname($("#audienceNickname")?.value);
   const code=String($("#audienceProfileCode")?.value||"").trim();
   if(nick.length<2){setAudienceMessage("Skriv et nickname på mindst 2 tegn.","bad");return}
-  const btn=$("#audienceProfileButton");btn.disabled=true;btn.textContent="Arbejder…";
+
+  const btn=$("#audienceProfileButton");
+  btn.disabled=true;
+  btn.textContent=code?"Logger ind…":"Opretter…";
+
   try{
-    const res=await audienceJsonp({action:"profile",nickname:nick,profile_code:code,create:code?"0":"1",user_id:audienceState.userId});
+    const res=await audienceJsonp({
+      action:"profile",
+      nickname:nick,
+      profile_code:code,
+      create:code?"0":"1",
+      user_id:audienceState.userId
+    });
+
     if(!res?.ok){
-      if(res?.code==="nickname_taken")throw new Error("Nickname findes allerede. Indtast profilkoden for at logge ind.");
+      if(res?.code==="nickname_taken"){
+        setProfileCodeVisible(true,{login:true});
+        $("#audienceProfileCode")?.focus();
+        setAudienceMessage("Nicknamet findes allerede. Indtast din profilkode for at logge ind.","bad");
+        return;
+      }
       throw new Error(res?.error||"Profilen kunne ikke åbnes.");
     }
+
     setNicknameLocal(res.nickname||nick,res.profile_code||code);
-    setAudienceMessage(res.created?`Profil oprettet. Din profilkode er ${res.profile_code}. Gem den.`:"Du er logget ind på profilen.","good");
+
+    if(res.created){
+      setProfileCodeVisible(true,{created:true});
+      if($("#audienceProfileCode"))$("#audienceProfileCode").value=res.profile_code||audienceState.profileCode;
+      setAudienceMessage(`Profil oprettet. Din profilkode er ${res.profile_code}. Gem den et sikkert sted.`,"good");
+    }else{
+      setProfileCodeVisible(true,{login:true});
+      setAudienceMessage("Du er logget ind på profilen.","good");
+    }
+
     await loadMyAudienceVotes();
-  }catch(err){setAudienceMessage(err.message,"bad")}
-  finally{btn.disabled=false;btn.textContent="Opret / log ind"}
+  }catch(err){
+    setAudienceMessage(err.message,"bad");
+  }finally{
+    btn.disabled=false;
+    const wrap=$("#audienceProfileCodeWrap");
+    const visible=wrap && !wrap.classList.contains("is-hidden");
+    const hasCode=String($("#audienceProfileCode")?.value||"").trim().length>0;
+    btn.textContent=visible&&hasCode?"Log ind":"Opret nickname";
+  }
 }
 async function loadAudienceLeaderboard(){
   const root=$("#audienceLeaderboard");if(!root||!audienceApiConfigured())return;
