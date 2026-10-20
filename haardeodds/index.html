@@ -442,8 +442,16 @@ section{margin-bottom:68px;scroll-margin-top:60px}
   letter-spacing:.06em;
 }
 .brier-box strong{
-  font-size:25px;
+  display:block;
+  font-size:30px;
   letter-spacing:-.04em;
+}
+.brier-box .h2h-brier{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
 }
 .match-meta{
   margin-top:10px;
@@ -992,6 +1000,68 @@ footer{
   .audience-code-receipt{grid-template-columns:1fr}
 }
 
+
+/* --- Samlet profil + åbne væddemål --- */
+.audience-open-shell{
+  border:1px solid var(--purple2);
+  background:#fff;
+}
+.audience-open-profile{
+  background:#f5eef8;
+  border-bottom:1px solid var(--purple2);
+  padding:18px;
+}
+.audience-open-profile .audience-panel{
+  border:0;
+  padding:0;
+  margin:0;
+  background:transparent;
+}
+.audience-open-bets{
+  padding:18px;
+}
+.audience-open-label{
+  display:grid;
+  grid-template-columns:1fr minmax(240px,390px);
+  gap:22px;
+  align-items:end;
+  margin-bottom:14px;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--line);
+}
+.audience-open-label h3{
+  margin:0;
+  font-size:30px;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+.audience-open-label p{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+}
+.audience-open-bets .open-list{
+  border-top:0;
+}
+.audience-open-history{
+  border-top:1px solid var(--purple2);
+  padding:18px;
+  background:#faf7fb;
+}
+.audience-open-history .audience-panel{
+  border:0;
+  padding:0;
+  margin:0;
+  background:transparent;
+}
+.audience-open-profile .audience-panel-head,
+.audience-open-history .audience-panel-head{
+  margin-bottom:12px;
+}
+@media(max-width:720px){
+  .audience-open-label{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -1013,10 +1083,10 @@ footer{
   </div>
 </header>
 
-<a class="guess-cta" href="#lytterne">
+<a class="guess-cta" href="#aabne">
   <div class="wrap guess-cta-inner">
     <strong>Kom og gæt med!</strong>
-    <span>Giv dine egne odds på de åbne væddemål — lytternes gennemsnit afsløres først efter dit eget bud.</span>
+    <span>Klik på et åbent spørgsmål og giv dit eget odds — lytternes gennemsnit afsløres først efter dit eget bud.</span>
     <span class="guess-cta-arrow" aria-hidden="true">↓</span>
   </div>
 </a>
@@ -1028,8 +1098,7 @@ footer{
     <a href="#moments">Genistreg / katastrofe</a>
     <a href="#kalibrering">Kalibrering</a>
     <a href="#h2h">Head-to-head</a>
-    <a href="#lytterne">Gæt med</a>
-    <a href="#aabne">Åbne bets</a>
+    <a href="#aabne">Åbne væddemål</a>
   </nav>
 </div>
 
@@ -1102,21 +1171,23 @@ footer{
       <div class="eyebrow">Fælles væddemål</div>
       <h2>Head-to-head</h2>
     </div>
-    <p>Kun gennemsnitlig Brier-score på de væddemål, hvor begge deltagere har afgivet et bud. Lavere er bedre.</p>
+    <p>Indeks beregnet kun på de væddemål, hvor begge deltagere har afgivet et bud. Højere indeks er bedre; gennemsnitlig Brier vises som sekundært tal.</p>
   </div>
   <div id="h2hGrid" class="h2h"></div>
 </section>
 
-<section id="lytterne">
+<section id="aabne">
   <div class="section-head">
     <div>
-      <div class="eyebrow">Dit eget odds</div>
-      <h2>Kom og gæt med</h2>
+      <div class="eyebrow">På spil</div>
+      <h2>Åbne væddemål</h2>
     </div>
-    <p>Du kan gå direkte til de åbne væddemål og gætte som gæst. Et nickname er kun nødvendigt, hvis du vil samle dine bud under ét navn, finde dem igen på andre enheder og senere kunne være med i Lytterligaen.</p>
+    <p><strong>Klik på et spørgsmål for at give dit bud.</strong> Du kan gætte som gæst med det samme eller oprette et nickname, hvis du vil samle din historik og kunne finde dine bud igen på andre enheder.</p>
   </div>
 
-  <article class="audience-panel audience-identity-panel">
+  <div class="audience-open-shell">
+    <div class="audience-open-profile">
+      <article class="audience-panel audience-identity-panel">
     <div class="audience-panel-head">
       <div>
         <div class="eyebrow">Din lytterprofil</div>
@@ -1194,8 +1265,21 @@ footer{
     <div id="audienceProfileMessage" class="audience-message" aria-live="polite"></div>
     <div id="myAudienceStats" class="audience-my-stats" hidden></div>
   </article>
+    </div>
 
-  <article class="audience-panel audience-history-panel">
+    <div class="audience-open-bets">
+      <div class="audience-open-label">
+        <div>
+          <div class="eyebrow">Dine bud</div>
+          <h3>Vælg et spørgsmål</h3>
+        </div>
+        <p>Fold et væddemål ud, sæt din sandsynlighed og afgiv dit bud. Lytternes gennemsnit er skjult, indtil du selv har gættet.</p>
+      </div>
+      <div id="openList" class="open-list"></div>
+    </div>
+
+    <div class="audience-open-history">
+      <article class="audience-panel audience-history-panel">
     <div class="audience-panel-head">
       <div>
         <div class="eyebrow">Din historik</div>
@@ -1206,17 +1290,9 @@ footer{
     <p id="audienceHistoryContext" class="audience-help">Som gæst er historikken knyttet til denne browser. Med et nickname kan den følge dig på tværs af enheder.</p>
     <div id="audienceHistory" class="audience-history"><div class="empty">Dine bud vises her, når du har afgivet det første.</div></div>
   </article>
-</section>
-
-<section id="aabne">
-  <div class="section-head">
-    <div>
-      <div class="eyebrow">På spil</div>
-      <h2>Åbne væddemål</h2>
     </div>
-    <p>Kun åbne spørgsmål hvor mindst tre af fire har afgivet et bud. Fold et spørgsmål ud for at afgive dit eget sandsynlighedsbud.</p>
   </div>
-  <div id="openList" class="open-list"></div>
+
   <details class="diagnostics">
     <summary>Data-diagnostik</summary>
     <pre id="diagnostics">Venter på data…</pre>
@@ -1995,14 +2071,25 @@ function renderH2H(settled){
       const common=settled.filter(r=>Number.isFinite(r.preds[a.key])&&Number.isFinite(r.preds[b.key]));
       const as=common.map(r=>brier(r.preds[a.key],r.outcome));
       const bs=common.map(r=>brier(r.preds[b.key],r.outcome));
+      const aBrier=avg(as), bBrier=avg(bs);
+      const aIndex=scoreToIndex(aBrier), bIndex=scoreToIndex(bBrier);
+
       const n=document.createElement("article");n.className="match";
       n.innerHTML=`
         <div class="match-title">${a.short} <span style="color:#8d7d91">vs.</span> ${b.short}</div>
         <div class="brier-pair">
-          <div class="brier-box"><small>${a.short}</small><strong>${fmtScore(avg(as))}</strong></div>
-          <div class="brier-box"><small>${b.short}</small><strong>${fmtScore(avg(bs))}</strong></div>
+          <div class="brier-box">
+            <small>${a.short} · indeks</small>
+            <strong>${fmtIndex(aIndex)}</strong>
+            <span class="h2h-brier">Brier ${fmtScore(aBrier)}</span>
+          </div>
+          <div class="brier-box">
+            <small>${b.short} · indeks</small>
+            <strong>${fmtIndex(bIndex)}</strong>
+            <span class="h2h-brier">Brier ${fmtScore(bBrier)}</span>
+          </div>
         </div>
-        <div class="match-meta">${common.length} fælles afgjorte væddemål · lavere Brier er bedre</div>`;
+        <div class="match-meta">${common.length} fælles afgjorte væddemål · højere indeks er bedre</div>`;
       root.appendChild(n);
     }
   }
@@ -2197,7 +2284,7 @@ function rowByBetId(id){
 function audienceBetIdentityHtml(){
   return hasAudienceProfile()
     ? `Buddet gemmes som <strong>${esc(audienceState.nickname)}</strong>.`
-    : `Du gætter som gæst. <a href="#lytterne" class="audience-profile-link">Gem dine bud med et nickname</a>.`;
+    : `Du gætter som gæst. <a href="#aabne" class="audience-profile-link">Gem dine bud med et nickname</a>.`;
 }
 function updateAudienceBetIdentityLabels(){
   document.querySelectorAll(".audience-vote-identity").forEach(el=>{
